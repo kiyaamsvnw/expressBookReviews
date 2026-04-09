@@ -1,3 +1,4 @@
+const axios = require('axios');
 const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
@@ -21,33 +22,28 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/', async function (req, res) {
-    const get_books = new Promise((resolve, reject) => {
-      resolve(res.send(JSON.stringify({books}, null, 4)));
-    });
-  
-    get_books.then(() => console.log("Promise for Task 10 resolved"));
-  });
+  try {
+    const response = await axios.get("http://localhost:5000/");
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book list" });
+  }
+});
 // public_users.get('/',function (req, res) {
 //   res.send(JSON.stringify(books, null, 4));
 // //   return res.status(300).json({message: "Yet to be implemented"});
 // });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn', function (req, res) {
-    const get_book_details = new Promise((resolve, reject) => {
-      const isbn = req.params.isbn;
-      if (books[isbn]) {
-        resolve(res.send(JSON.stringify(books[isbn], null, 4)));
-      } else {
-        reject(res.status(404).json({message: "Book not found"}));
-      }
-    });
-  
-    get_book_details.then(
-      () => console.log("Promise for Task 11 resolved"),
-      (err) => console.log("Error finding book")
-    );
-  });
+public_users.get('/isbn/:isbn', async function (req, res) {
+  const isbn = req.params.isbn;
+  try {
+    const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(404).json({ message: "ISBN not found" });
+  }
+});
 // public_users.get('/isbn/:isbn',function (req, res) {
 //   const isbn = req.params.isbn;
 //   res.send(books[isbn]);
@@ -55,20 +51,15 @@ public_users.get('/isbn/:isbn', function (req, res) {
 //  });
   
 // Get book details based on author
-public_users.get('/author/:author', function (req, res) {
-    const get_books_author = new Promise((resolve, reject) => {
-      const author = req.params.author;
-      const authorBooks = Object.values(books).filter(book => book.author === author);
-      
-      if (authorBooks.length > 0) {
-        resolve(res.send(JSON.stringify(authorBooks, null, 4)));
-      } else {
-        reject(res.status(404).json({message: "No books found by this author"}));
-      }
-    });
-  
-    get_books_author.then(() => console.log("Promise for Task 12 resolved"));
-  });
+public_users.get('/author/:author', async function (req, res) {
+  const author = req.params.author;
+  try {
+    const response = await axios.get(`http://localhost:5000/author/${author}`);
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(404).json({ message: "No books found for this author" });
+  }
+});
 // public_users.get('/author/:author',function (req, res) {
 //     const author = req.params.author;
 //     let keys = Object.keys(books);
@@ -85,20 +76,15 @@ public_users.get('/author/:author', function (req, res) {
 // });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
-    const get_books_title = new Promise((resolve, reject) => {
-      const title = req.params.title;
-      const titleBooks = Object.values(books).filter(book => book.title === title);
-  
-      if (titleBooks.length > 0) {
-        resolve(res.send(JSON.stringify(titleBooks, null, 4)));
-      } else {
-        reject(res.status(404).json({message: "No books found with this title"}));
-      }
-    });
-  
-    get_books_title.then(() => console.log("Promise for Task 13 resolved"));
-  });
+public_users.get('/title/:title', async function (req, res) {
+  const title = req.params.title;
+  try {
+    const response = await axios.get(`http://localhost:5000/title/${title}`);
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(404).json({ message: "No books found with this title" });
+  }
+});
 // public_users.get('/title/:title',function (req, res) {
 //     const title = req.params.title;
 //     let keys = Object.keys(books);

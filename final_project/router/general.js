@@ -5,7 +5,10 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-
+/**
+ * Task 6: Register a new user.
+ * Validates if the username is unique and saves the new user to the shared users array.
+ */
 public_users.post("/register", (req,res) => {
     const { username, password } = req.body;
 
@@ -20,21 +23,25 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({ message: "Unable to register user." });
 });
 
-// Get the book list available in the shop
+/**
+ * Task 10: Get the book list available in the shop.
+ * Implements an asynchronous call using Axios to retrieve the full list of books.
+ */
 public_users.get('/', async function (req, res) {
   try {
+    // Calling the internal endpoint asynchronously
     const response = await axios.get("http://localhost:5000/");
     res.status(200).json(response.data);
   } catch (error) {
+    // Error handling for failed data retrieval
     res.status(500).json({ message: "Error fetching book list" });
   }
 });
-// public_users.get('/',function (req, res) {
-//   res.send(JSON.stringify(books, null, 4));
-// //   return res.status(300).json({message: "Yet to be implemented"});
-// });
 
-// Get book details based on ISBN
+/**
+ * Task 11: Get book details based on ISBN.
+ * Uses an async Axios request to fetch details for a specific book by its ISBN path parameter.
+ */
 public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
   try {
@@ -44,13 +51,11 @@ public_users.get('/isbn/:isbn', async function (req, res) {
     res.status(404).json({ message: "ISBN not found" });
   }
 });
-// public_users.get('/isbn/:isbn',function (req, res) {
-//   const isbn = req.params.isbn;
-//   res.send(books[isbn]);
-// //   return res.status(300).json({message: "Yet to be implemented"});
-//  });
   
-// Get book details based on author
+/**
+ * Task 12: Get book details based on author.
+ * Asynchronously searches for all books associated with a specific author using Axios.
+ */
 public_users.get('/author/:author', async function (req, res) {
   const author = req.params.author;
   try {
@@ -60,22 +65,11 @@ public_users.get('/author/:author', async function (req, res) {
     res.status(404).json({ message: "No books found for this author" });
   }
 });
-// public_users.get('/author/:author',function (req, res) {
-//     const author = req.params.author;
-//     let keys = Object.keys(books);
-//     let filtered_books = [];
-  
-//     keys.forEach((key) => {
-//     if (books[key].author === author) {
-//     filtered_books.push(books[key]);
-//    }
-//   });
-  
-// res.send(JSON.stringify(filtered_books, null, 4));
-// //   return res.status(300).json({message: "Yet to be implemented"});
-// });
 
-// Get all books based on title
+/**
+ * Task 13: Get all books based on title.
+ * Performs an asynchronous search by title using Axios and handles cases where titles match.
+ */
 public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title;
   try {
@@ -85,25 +79,18 @@ public_users.get('/title/:title', async function (req, res) {
     res.status(404).json({ message: "No books found with this title" });
   }
 });
-// public_users.get('/title/:title',function (req, res) {
-//     const title = req.params.title;
-//     let keys = Object.keys(books);
-//     let filtered_books = [];
-  
-//     keys.forEach((key) => {
-//       if (books[key].title === title) {
-//         filtered_books.push(books[key]);
-//       }
-//     });
-  
-//     res.send(JSON.stringify(filtered_books, null, 4));
-// });
 
-//  Get book review
+/**
+ * Task 5: Get book reviews based on ISBN.
+ * Synchronously retrieves the reviews object for a specific book entry.
+ */
 public_users.get('/review/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    res.send(books[isbn].reviews);
-//   return res.status(300).json({message: "Yet to be implemented"});
+    if (books[isbn]) {
+        res.send(books[isbn].reviews);
+    } else {
+        res.status(404).json({ message: "Book reviews not found" });
+    }
 });
 
 module.exports.general = public_users;
